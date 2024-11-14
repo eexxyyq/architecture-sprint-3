@@ -1,0 +1,65 @@
+@startuml
+title House Control System Web Application Component Diagram
+
+top to bottom direction
+
+!includeurl https://raw.githubusercontent.com/RicardoNiepel/C4-PlantUML/master/C4_Component.puml
+
+System_Ext(HouseControlHub, "Хаб управления умным домом", "Хаб управления умным домом, к которому подключены все системы умного дома")
+System_Ext(NotificationSystemPush, "Система push уведомлений", "Система, через которую направляются все push уведомления")
+System_Ext(NotificationSystemEmail, "Система email уведомлений", "Система, через которую направляются все email уведомления")
+System_Ext(NotificationSystemSms, "Система sms уведомлений", "Система, через которую направляются все sms уведомления")
+
+Container_Boundary(HouseControlSystem, "Система контроля Умного дома") {
+  Container(WebApp, "Web Application", "Java, Spring", "Взаимодействие с пользователями и хабами умных домов")
+  Container(MobileApp, "Mobile Application", "Kotlin, Swift", "Регистрация/удаление аккаунта,подключение хабов управления умного дома,получение актуальной информации о системах умного дома")
+  Container(DatabaseSQLUser, "Database SQL", "PostgreSQL", "Хранение данных о пользователях")
+  Container(DatabaseSQLHub, "Database SQL", "PostgreSQL", "Хранение данных о хабах")
+  Container(DatabaseSQLSystem, "Database SQL", "PostgreSQL", "Хранение данных о системах умного дома")
+  Container(DatabaseSQL, "Database SQL", "PostgreSQL", "Хранение данных о пользователях, системах, состояниях")
+  Container(DatabaseNoSQL, "Database NoSQL", "Mongo", "Хранение показателей датчиков")
+  Container(DatabaseNoSQLNotification, "Database NoSQL", "Mongo", "Хранение уведомлений")
+  Container(DatabaseNoSQLLogging, "Database NoSQL", "Mongo", "Хранение данных логирования и аудита")
+  Container(CacheDatabase, "Cache", "Redis", "Хранение агрегатов состояний")
+  Container(MB, "Message broker", "Kafka", "Брокер сообщений")
+}
+
+
+Container(WebApp, "Web Application", "Java, Spring") {
+  Component(APIGateway, API gateway, "Kong")
+  Component(UserService, "User service", "Управление аккаунтами пользователей")
+  Component(HubService, "HUB service", "Управление хабами умного дома")
+  Component(SensorService, "Sensor service", "Сбор информации о датчиках систем умного дома")
+  Component(AnalyticService, "Analytic service", "Анализ данных и расчет управляющих воздействий")
+  Component(SystemControlService, "System Control service", "Управление системами и хранение агрегатов состояний")
+  Component(LoggingService, "Logging service", "Управление аудитом и логированием")
+  Component(NotificationService, "Notification service", "Управление уведомлениями")
+}
+
+Rel(MobileApp, APIGateway, "Передача сценариев для систем умного дома")
+Rel(APIGateway, MobileApp, "Передача показателей систем умного дома")
+Rel(HouseControlHub, APIGateway, "Передача данных о системах умного дома")
+Rel(HubService, HouseControlHub, "Передача управляющих взаимодействий о системах умного дома")
+Rel(APIGateway, HubService, "Передача сценариев для систем умного дома")
+Rel(HubService, DatabaseSQLHub, "Манипуляции с данными пользователей")
+Rel(HubService, MB, "Публикация/чтение событий")
+Rel(APIGateway, UserService, "Сценарии управления аккаунтами пользователя")
+Rel(UserService, DatabaseSQLUser, "Манипуляции с данными пользователей")
+Rel(LoggingService, DatabaseNoSQLLogging, "Хранение данных логирования и аудита")
+Rel(NotificationService, DatabaseNoSQLNotification, "Хранение уведомлений")
+Rel(UserService, MB, "Публикация/чтение событий")
+Rel(APIGateway, SensorService, "Передача показателей датчиков")
+Rel(SensorService, MB, "Публикация/чтение событий")
+Rel(AnalyticService, MB, "Публикация/чтение событий")
+Rel(LoggingService, MB, "Публикация/чтение событий")
+Rel(NotificationService, MB, "Публикация/чтение событий")
+Rel(SensorService, DatabaseNoSQL, "Манипуляции с данными датчиков")
+Rel(SystemControlService, CacheDatabase, "Хранение агрегатов состояний")
+Rel(SystemControlService, DatabaseSQLSystem, "Хранение данных о системах умного дома")
+Rel(NotificationService, NotificationSystemPush, "Передача push уведомлений на отправку")
+Rel(NotificationService, NotificationSystemEmail, "Передача email уведомлений на отправку")
+Rel(NotificationService, NotificationSystemSms, "Передача sms уведомлений на отправку")
+
+
+
+@enduml
