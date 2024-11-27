@@ -1,0 +1,56 @@
+asyncapi: 3.0.0
+info:
+  title: Notification Service Async API
+  version: '0.1.0'
+servers:
+  kafkaServer:
+    host: test.mykafkacluster.org:9092
+    description: Kafka Server
+    protocol: kafka
+channels:
+  accountCreation:
+    description: Account creating domain event
+    address: 'PRFX_ACCOUNT'
+    messages:
+      createAccountMessage:
+        payload:
+          type: object
+          $ref: '#/components/schemas/accountDomainInfo'
+  accountRemove:
+    description: Account remove domain event
+    address: 'PRFX_ACCOUNT'
+    messages:
+      createAccountMessage:
+        payload:
+          type: object
+          $ref: '#/components/schemas/accountDomainInfo'
+operations:
+  notifyCreateAccount:
+    action: 'receive'
+    channel:
+      $ref: '#/channels/accountCreation'
+  notifyRemoveAccount:
+    action: 'receive'
+    channel:
+      $ref: '#/channels/accountRemove'
+components:
+  schemas:
+    accountDomainInfo:
+      type: object
+      required:
+        - accountId
+        - userName
+        - email
+      properties:
+        userName:
+          type: string
+          example: Пользователь Тестовый
+          description: Имя и фамилия пользователя
+        accountId:
+          type: string
+          example: 'bcd065cf-9174-4700-94eb-c88ac927d9df'
+          description: UUID v4
+        email:
+          type: string
+          example: some_email@mail.ru
+          description: email пользователя

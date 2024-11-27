@@ -1,0 +1,140 @@
+openapi: 3.0.3
+info:
+  title: User Service - OpenAPI 3.0
+  description: |-
+    This is a example of API
+  version: 0.1.0
+servers:
+  - url: https://user-service/api/v1
+tags:
+  - name: account
+    description: Operations about account
+paths:
+  /account:
+    post:
+      tags:
+        - account
+      summary: Create an account
+      description: Create an account
+      operationId: createAccount
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/accountCreateRequest'
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/accountCreateResponse'
+        '400':
+          description: Invalid input
+        '422':
+          description: Validation exception
+  /account/{accountId}:
+    delete:
+      tags:
+        - account
+      summary: Delete an account
+      description: Delete an account
+      operationId: deleteAccount
+      parameters:
+        - in: path
+          name: accountId
+          required: true
+          schema:
+            type: string
+            example: bcd065cf-9174-4700-94eb-c88ac927d9df
+      responses:
+        '204':
+          description: Successful operation
+        '400':
+          description: Invalid input
+        '422':
+          description: Validation exception
+    get:
+      tags:
+        - account
+      summary: Get an account
+      description: Get an account
+      operationId: getAccount
+      parameters:
+        - in: path
+          name: accountId
+          required: true
+          schema:
+            type: string
+            example: bcd065cf-9174-4700-94eb-c88ac927d9df
+      responses:
+        '204':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/accountInfoDto'
+        '400':
+          description: Invalid input
+        '422':
+          description: Validation exception
+
+components:
+  schemas:
+    accountCreateRequest:
+      type: object
+      required:
+        - userName
+        - pwdHash
+        - email
+      properties:
+        userName:
+          type: string
+          example: Пользователь Тестовый
+          description: Имя и фамилия пользователя
+        pwdHash:
+          type: string
+          example: 'cGFzc3dvcmRAc29tZV9lbWFpbEBtYWlsLnJ1'
+          description: base64 hash
+        email:
+          type: string
+          example: some_email@mail.ru
+          description: email пользователя
+    accountCreateResponse:
+      type: object
+      required:
+        - userName
+        - email
+        - accountId
+      properties:
+        userName:
+          type: string
+          example: Пользователь Тестовый
+          description: Имя и фамилия пользователя
+        accountId:
+          type: string
+          example: 'bcd065cf-9174-4700-94eb-c88ac927d9df'
+          description: UUID v4
+        email:
+          type: string
+          example: some_email@mail.ru
+          description: email пользователя
+    accountInfoDto:
+      type: object
+      required:
+        - userName
+        - email
+        - accountId
+      properties:
+        userName:
+          type: string
+          example: Пользователь Тестовый
+          description: Имя и фамилия пользователя
+        accountId:
+          type: string
+          example: 'bcd065cf-9174-4700-94eb-c88ac927d9df'
+          description: UUID v4
+        email:
+          type: string
+          example: some_email@mail.ru
+          description: email пользователя
