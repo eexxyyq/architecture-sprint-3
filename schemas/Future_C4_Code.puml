@@ -1,0 +1,60 @@
+@startuml
+title SystemControlService Code Diagram
+
+top to bottom direction
+
+!includeurl https://raw.githubusercontent.com/RicardoNiepel/C4-PlantUML/master/C4_Component.puml
+
+class SystemControlController {
+    +SystemControlService service
+    +void addSystem(HouseControlSystem system)
+    +void removeSystem(HouseControlSystem system)
+    +HouseControlSystemAggregate getCurrentStateAggregate(String id)
+}
+
+class SystemControlService{
+  +RedisTemplate redisTemplate
+  +SystemControlRepository repository
+  +void addSystem(HouseControlSystem system)
+  +void removeSystem(HouseControlSystem system)
+  +HouseControlSystemAggregate getCurrentStateAggregate(String id)
+  +void recalculateAggregate(KafkaSensorsMetricsMessage msg)
+  +void recalculateAggregate(KafkaStateMessage msg)
+  +void updateState(KafkaStateMessage msg)
+  +void updateValues(KafkaSensorsMetricsMessage msg)
+}
+
+class RedisTemplate {
+}
+
+class SystemControlRepository{
+}
+
+class KafkaStateListener {
+    +SystemControlService service
+    +void handleMessage(KafkaStateMessage message)
+}
+
+class KafkaSensorsMetricsListener {
+    +SystemControlService service
+    +void handleMessage(KafkaSensorsMetricsMessage message)
+}
+
+class Kafka {
+}
+class Redis {
+}
+class Database {
+}
+
+SystemControlController -down--> SystemControlService : "actions"
+SystemControlService -down--> RedisTemplate : "get or update aggregate"
+RedisTemplate -down--> Redis : "get or update aggregate"
+SystemControlService -down--> SystemControlRepository : "CRUD operations"
+SystemControlRepository -down--> Database : "CRUD operations"
+KafkaSensorsMetricsListener -down--> Kafka : "listen"
+KafkaStateListener -down--> Kafka : "listen"
+KafkaStateListener -down--> SystemControlService : "hangle message"
+KafkaSensorsMetricsListener -down--> SystemControlService : "hangle message"
+
+@enduml

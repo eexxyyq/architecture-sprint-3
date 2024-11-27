@@ -1,0 +1,28 @@
+@startuml
+title User Service
+
+top to bottom direction
+
+!includeurl https://raw.githubusercontent.com/RicardoNiepel/C4-PlantUML/master/C4_Component.puml
+
+Container(APIGateway, API gateway, "Kong")
+Container(MB, "Message broker", "Kafka", "Брокер сообщений")
+Container(DatabaseSQLUser, "Database SQL", "PostgreSQL", "Хранение данных о пользователях")
+Container(UserService, "User service", "Управление аккаунтами пользователей")
+
+Boundary(UserService, "Component Boundary") {
+  Component(AccountController, "Account Rest Controller", "Spring MVC", "Обрабатывает вызовы API, связанные с ЖЦ аккаунта")
+  Component(AccountService, "Account Management Component", "Spring Service Java", "Контролирует логику, связанную с ЖЦ аккаунта")
+  Component(Repository, "Repository Layer Component", "Spring Repository Java", "Контролирует логику, связанную с взаимодействием с БД")
+  Component(Sender, "Kafka Sender Component", "Spring Java", "Контролирует логику, связанную с взаимодействием с Kafka")
+}
+
+Rel(APIGateway, AccountController, "Маршрутизация вызовов API сервиса")
+Rel(AccountController, AccountService, "Вызов бизнес логики приложения")
+Rel(AccountService, Repository, "Вызов транзикционного слоя")
+Rel(AccountService, Sender, "Вызов логики работы с брокером сообщений")
+Rel(Sender, MB, "Отправка сообщений в брокер")
+Rel(Repository, DatabaseSQLUser, "Манипуляции с данными в БД")
+
+
+@enduml

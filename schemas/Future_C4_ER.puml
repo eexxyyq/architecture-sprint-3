@@ -1,0 +1,50 @@
+@startuml
+title House Control System Hub Management Code Diagram
+
+top to bottom direction
+
+!includeurl https://raw.githubusercontent.com/RicardoNiepel/C4-PlantUML/master/C4_Component.puml
+
+
+entity "Пользователь" as User {
+    * user_id : UUID
+    * username : string
+    * password_hash : string
+    * email : string
+    * created_at : datetime
+}
+
+entity "Дом" as House {
+    * id : UUID
+    * user_id : UUID
+    * created_at : datetime
+}
+
+entity "Хаб управления" as ControlHub {
+    * id : UUID
+    * house_id : UUID
+    * created_at : datetime
+}
+
+entity "Система управления" as ControlSystem {
+    * id : UUID
+    * hub_id : UUID
+    * type: String
+}
+
+entity "Датчик" as Sensor {
+    * id : UUID
+    * systemId : UUID
+    * type : String
+    * value : String
+    * unitOfMeasurement : String
+}
+
+
+
+User "1" -- "0..*" House : "владеет"
+House "1" -- "0..*" ControlHub : "содержит"
+ControlHub "1" -- "0..*" ControlSystem : "содержит"
+ControlSystem "1" -- "0..*" Sensor : "содержит"
+
+@enduml
