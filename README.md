@@ -131,7 +131,7 @@ Kafka выступает брокером сообщений, через кот�
 ## 3. Визуализация архитектуры:
 
 - C4 Component - [Future_C4_Component.puml](schemas/Future_C4_Component.puml)
-- C4 Container - [Future_C4_Container.puml](schemas/Future_C4_Container.puml)
+- C4 Container - [Future_C4_Container.puml](schemas/Future_C4_Containers.puml)
 - C4 Code - [Future_C4_Code.puml](schemas/Future_C4_Code.puml)
 
 # Задание 3. Разработка ER-диаграммы
